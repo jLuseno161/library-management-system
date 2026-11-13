@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -46,18 +47,19 @@ async function main() {
             author: b.author,
             isbn: b.isbn,
             publishedYear: b.year,
-            copies: 3,
+            totalCopies: 3,
           })),
         },
       },
     });
   }
 
+  const passwordHash = await bcrypt.hash('password123', 10);
   await prisma.user.createMany({
-    data: [
-      { email: 'librarian@library.test', name: 'Lib Rarian', role: 'LIBRARIAN' },
-      { email: 'patron@library.test', name: 'Pat Ron', role: 'PATRON' },
-    ],
+      data: [
+        { email: 'librarian@library.test', name: 'Lib Rarian', role: 'LIBRARIAN', password: passwordHash },
+        { email: 'patron@library.test', name: 'Pat Ron', role: 'PATRON', password: passwordHash },
+      ],
   });
 
   const [genres, books] = await Promise.all([prisma.genre.count(), prisma.book.count()]);
