@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "Library Management System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"new@library.test\",\n  \"name\": \"New Patron\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Login (librarian)",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('token', pm.response.json().access_token);"] }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"librarian@library.test\",\n  \"password\": \"password123\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Genres",
+      "item": [
+        {
+          "name": "Create genre",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/genres",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Poetry\"\n}" }
+          }
+        },
+        { "name": "List genres", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/genres" } },
+        { "name": "Get genre", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/genres/1" } },
+        {
+          "name": "Update genre",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/genres/1",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sci-Fi\"\n}" }
+          }
+        },
+        { "name": "Delete genre", "request": { "method": "DELETE", "url": "{{baseUrl}}/genres/5" } }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "List books (filter, search, paginate)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/books?genreId=1&search=dune&page=1&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["books"],
+              "query": [
+                { "key": "genreId", "value": "1" },
+                { "key": "search", "value": "dune" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        { "name": "Get book", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/books/1" } },
+        {
+          "name": "Create book",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/books",
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"New Book\",\n  \"author\": \"Some Author\",\n  \"isbn\": \"9781234567890\",\n  \"totalCopies\": 3,\n  \"genreId\": 1\n}" }
+          }
+        },
+        {
+          "name": "Update book",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/books/1",
+            "body": { "mode": "raw", "raw": "{\n  \"totalCopies\": 5\n}" }
+          }
+        },
+        { "name": "Delete book", "request": { "method": "DELETE", "url": "{{baseUrl}}/books/1" } }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "My profile", "request": { "method": "GET", "url": "{{baseUrl}}/users/profile" } }
+      ]
+    }
+  ]
+}
